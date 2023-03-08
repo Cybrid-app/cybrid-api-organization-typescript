@@ -38,6 +38,6 @@ export class ServerConfiguration<T extends { [key: string]: string }> {
     }
 }
 
-const server1 = new ServerConfiguration<{  "defaultHost": string  }>("https://organization.demo.cybrid.app", {  "defaultHost": "https://organization.demo.cybrid.app"  }, "");
+const server1 = new ServerConfiguration<{  "defaultHost": string  }>("https://organization.sandbox.cybrid.app", {  "defaultHost": "https://organization.sandbox.cybrid.app"  }, "");
 
 export const servers = [server1];
