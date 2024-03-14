@@ -11,183 +11,154 @@
  * Do not edit the class manually.
  */
 
-import { of } from 'rxjs';
 import type { Observable } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import type { AjaxConfig, AjaxResponse } from 'rxjs/ajax';
-import { map, concatMap } from 'rxjs/operators';
-import { servers } from './servers';
+import type { AjaxResponse } from 'rxjs/ajax';
+import { BaseAPI, throwIfNullOrUndefined, encodeURI } from '../runtime';
+import type { OperationOpts, HttpHeaders, HttpQuery } from '../runtime';
+import type {
+    ErrorResponseOrganizationModel,
+    PostSubscriptionOrganizationModel,
+    SubscriptionListOrganizationModel,
+    SubscriptionOrganizationModel,
+} from '../models';
 
-export const BASE_PATH = servers[0].getUrl();
-
-export interface ConfigurationParameters {
-    basePath?: string; // override base path
-    middleware?: Middleware[]; // middleware to apply before/after rxjs requests
-    username?: string; // parameter for basic security
-    password?: string; // parameter for basic security
-    apiKey?: string | ((name: string) => string); // parameter for apiKey security
-    accessToken?: string | ((name?: string, scopes?: string[]) => string); // parameter for oauth2 security
+export interface CreateSubscriptionRequest {
+    postSubscriptionOrganizationModel: PostSubscriptionOrganizationModel;
 }
 
-export class Configuration {
-    constructor(private configuration: ConfigurationParameters = {}) {}
+export interface DeleteSubscriptionRequest {
+    subscriptionGuid: string;
+}
 
-    get basePath(): string {
-        return this.configuration.basePath ?? BASE_PATH;
-    }
+export interface GetSubscriptionRequest {
+    subscriptionGuid: string;
+}
 
-    get middleware(): Middleware[] {
-        return this.configuration.middleware ?? [];
-    }
-
-    get username(): string | undefined {
-        return this.configuration.username;
-    }
-
-    get password(): string | undefined {
-        return this.configuration.password;
-    }
-
-    get apiKey(): ((name: string) => string) | undefined {
-        const { apiKey } = this.configuration;
-        return apiKey ? (typeof apiKey === 'string' ? () => apiKey : apiKey) : undefined;
-    }
-
-    get accessToken(): ((name: string, scopes?: string[]) => string) | undefined {
-        const { accessToken } = this.configuration;
-        return accessToken ? (typeof accessToken === 'string' ? () => accessToken : accessToken) : undefined;
-    }
+export interface ListSubscriptionsRequest {
+    page?: number;
+    perPage?: number;
+    guid?: string;
 }
 
 /**
- * This is the base class for all generated API classes.
+ * no description
  */
-export class BaseAPI {
-    private middleware: Middleware[] = [];
-
-    constructor(protected configuration = new Configuration()) {
-        this.middleware = configuration.middleware;
-    }
-
-    withMiddleware = (middlewares: Middleware[]): this => {
-        const next = this.clone();
-        next.middleware = next.middleware.concat(middlewares);
-        return next;
-    };
-
-    withPreMiddleware = (preMiddlewares: Array<Middleware['pre']>) =>
-        this.withMiddleware(preMiddlewares.map((pre) => ({ pre })));
-
-    withPostMiddleware = (postMiddlewares: Array<Middleware['post']>) =>
-        this.withMiddleware(postMiddlewares.map((post) => ({ post })));
-
-    protected request<T>(requestOpts: RequestOpts): Observable<T>
-    protected request<T>(requestOpts: RequestOpts, responseOpts?: ResponseOpts): Observable<AjaxResponse<T>>
-    protected request<T>(requestOpts: RequestOpts, responseOpts?: ResponseOpts): Observable<T | AjaxResponse<T>> {
-        return this.rxjsRequest<T>(this.createRequestArgs(requestOpts)).pipe(
-            map((res) => {
-                const { status, response } = res;
-                if (status >= 200 && status < 300) {
-                    return responseOpts?.response === 'raw' ? res : response;
-                }
-                throw res;
-            })
-        );
-    }
-
-    private createRequestArgs = ({ url: baseUrl, query, method, headers, body, responseType }: RequestOpts): AjaxConfig => {
-        // only add the queryString to the URL if there are query parameters.
-        // this is done to avoid urls ending with a '?' character which buggy webservers
-        // do not handle correctly sometimes.
-        const url = `${this.configuration.basePath}${baseUrl}${query && Object.keys(query).length ? `?${queryString(query)}`: ''}`;
-
-        return {
-            url,
-            method,
-            headers,
-            body: body instanceof FormData ? body : JSON.stringify(body),
-            responseType: responseType ?? 'json',
-        };
-    }
-
-    private rxjsRequest = <T>(params: AjaxConfig): Observable<AjaxResponse<T>> =>
-        of(params).pipe(
-            map((request) => {
-                this.middleware.filter((item) => item.pre).forEach((mw) => (request = mw.pre!(request)));
-                return request;
-            }),
-            concatMap((args) =>
-                ajax<T>(args).pipe(
-                    map((response) => {
-                        this.middleware.filter((item) => item.post).forEach((mw) => (response = mw.post!(response)));
-                        return response;
-                    })
-                )
-            )
-        );
+export class SubscriptionsOrganizationApi extends BaseAPI {
 
     /**
-     * Create a shallow clone of `this` by constructing a new instance
-     * and then shallow cloning data members.
+     * Creates a Subscription.  ## Subscription creation  Subscriptions can be created for webhook endpoints.  ## State  | State | Description | |-------|-------------| | storing | The Platform is storing the subscription details in our private store | | completed | The Platform has created the subscription | | failed | The Platform was not able to successfully create the subscription | | deleting | The Platform is deleting the subscription | | deleted | The Platform has deleted the subscription|    Required scope: **subscriptions:execute
+     * Create Subscription
      */
-    private clone = (): this =>
-        Object.assign(Object.create(Object.getPrototypeOf(this)), this);
-}
+    createSubscription({ postSubscriptionOrganizationModel }: CreateSubscriptionRequest): Observable<SubscriptionOrganizationModel>
+    createSubscription({ postSubscriptionOrganizationModel }: CreateSubscriptionRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionOrganizationModel>>
+    createSubscription({ postSubscriptionOrganizationModel }: CreateSubscriptionRequest, opts?: OperationOpts): Observable<SubscriptionOrganizationModel | AjaxResponse<SubscriptionOrganizationModel>> {
+        throwIfNullOrUndefined(postSubscriptionOrganizationModel, 'postSubscriptionOrganizationModel', 'createSubscription');
 
-/**
- * @deprecated
- * export for not being a breaking change
- */
-export class RequiredError extends Error {
-    name: 'RequiredError' = 'RequiredError';
-}
+        const headers: HttpHeaders = {
+            'Content-Type': 'application/json',
+            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
+            // oauth required
+            ...(this.configuration.accessToken != null
+                ? { Authorization: typeof this.configuration.accessToken === 'function'
+                    ? this.configuration.accessToken('oauth2', [])
+                    : this.configuration.accessToken }
+                : undefined
+            ),
+        };
 
-export const COLLECTION_FORMATS = {
-    csv: ',',
-    ssv: ' ',
-    tsv: '\t',
-    pipes: '|',
-};
+        return this.request<SubscriptionOrganizationModel>({
+            url: '/api/subscriptions/',
+            method: 'POST',
+            headers,
+            body: postSubscriptionOrganizationModel,
+        }, opts?.responseOpts);
+    };
 
-export type Json = any;
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'HEAD';
-export type HttpHeaders = { [key: string]: string };
-export type HttpQuery = Partial<{ [key: string]: string | number | null | boolean | Array<string | number | null | boolean> }>; // partial is needed for strict mode
-export type HttpBody = Json | FormData;
+    /**
+     * Deletes a subscription.  Required scope: **subscriptions:execute**
+     * Delete Subscription
+     */
+    deleteSubscription({ subscriptionGuid }: DeleteSubscriptionRequest): Observable<SubscriptionOrganizationModel>
+    deleteSubscription({ subscriptionGuid }: DeleteSubscriptionRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionOrganizationModel>>
+    deleteSubscription({ subscriptionGuid }: DeleteSubscriptionRequest, opts?: OperationOpts): Observable<SubscriptionOrganizationModel | AjaxResponse<SubscriptionOrganizationModel>> {
+        throwIfNullOrUndefined(subscriptionGuid, 'subscriptionGuid', 'deleteSubscription');
 
-export interface RequestOpts extends AjaxConfig {
-    // TODO: replace custom 'query' prop with 'queryParams'
-    query?: HttpQuery; // additional prop
-    // the following props have improved types over AjaxRequest
-    method: HttpMethod;
-    headers?: HttpHeaders;
-    body?: HttpBody;
-}
+        const headers: HttpHeaders = {
+            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
+            // oauth required
+            ...(this.configuration.accessToken != null
+                ? { Authorization: typeof this.configuration.accessToken === 'function'
+                    ? this.configuration.accessToken('oauth2', [])
+                    : this.configuration.accessToken }
+                : undefined
+            ),
+        };
 
-export interface ResponseOpts {
-    response?: 'raw';
-}
+        return this.request<SubscriptionOrganizationModel>({
+            url: '/api/subscriptions/{subscription_guid}'.replace('{subscription_guid}', encodeURI(subscriptionGuid)),
+            method: 'DELETE',
+            headers,
+        }, opts?.responseOpts);
+    };
 
-export interface OperationOpts {
-    responseOpts?: ResponseOpts;
-}
+    /**
+     * Retrieves a subscription.  Required scope: **subscriptions:read**
+     * Get Subscription 
+     */
+    getSubscription({ subscriptionGuid }: GetSubscriptionRequest): Observable<SubscriptionOrganizationModel>
+    getSubscription({ subscriptionGuid }: GetSubscriptionRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionOrganizationModel>>
+    getSubscription({ subscriptionGuid }: GetSubscriptionRequest, opts?: OperationOpts): Observable<SubscriptionOrganizationModel | AjaxResponse<SubscriptionOrganizationModel>> {
+        throwIfNullOrUndefined(subscriptionGuid, 'subscriptionGuid', 'getSubscription');
 
-export const encodeURI = (value: any) => encodeURIComponent(`${value}`);
+        const headers: HttpHeaders = {
+            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
+            // oauth required
+            ...(this.configuration.accessToken != null
+                ? { Authorization: typeof this.configuration.accessToken === 'function'
+                    ? this.configuration.accessToken('oauth2', ['subscriptions:read'])
+                    : this.configuration.accessToken }
+                : undefined
+            ),
+        };
 
-const queryString = (params: HttpQuery): string => Object.entries(params)
-    .map(([key, value]) => value instanceof Array
-        ? value.map((val) => `${encodeURI(key)}=${encodeURI(val)}`).join('&')
-        : `${encodeURI(key)}=${encodeURI(value)}`
-    )
-    .join('&');
+        return this.request<SubscriptionOrganizationModel>({
+            url: '/api/subscriptions/{subscription_guid}'.replace('{subscription_guid}', encodeURI(subscriptionGuid)),
+            method: 'GET',
+            headers,
+        }, opts?.responseOpts);
+    };
 
-export const throwIfNullOrUndefined = (value: any, paramName: string, nickname: string) => {
-    if (value == null) {
-        throw new Error(`Parameter "${paramName}" was null or undefined when calling "${nickname}".`);
-    }
-};
+    /**
+     * Retrieves a listing of subscriptions.  Required scope: **subscriptions:read**
+     * Get subscriptions list
+     */
+    listSubscriptions({ page, perPage, guid }: ListSubscriptionsRequest): Observable<SubscriptionListOrganizationModel>
+    listSubscriptions({ page, perPage, guid }: ListSubscriptionsRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionListOrganizationModel>>
+    listSubscriptions({ page, perPage, guid }: ListSubscriptionsRequest, opts?: OperationOpts): Observable<SubscriptionListOrganizationModel | AjaxResponse<SubscriptionListOrganizationModel>> {
 
-export interface Middleware {
-    pre?(request: AjaxConfig): AjaxConfig;
-    post?(response: AjaxResponse<any>): AjaxResponse<any>;
+        const headers: HttpHeaders = {
+            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
+            // oauth required
+            ...(this.configuration.accessToken != null
+                ? { Authorization: typeof this.configuration.accessToken === 'function'
+                    ? this.configuration.accessToken('oauth2', ['subscriptions:read'])
+                    : this.configuration.accessToken }
+                : undefined
+            ),
+        };
+
+        const query: HttpQuery = {};
+
+        if (page != null) { query['page'] = page; }
+        if (perPage != null) { query['per_page'] = perPage; }
+        if (guid != null) { query['guid'] = guid; }
+
+        return this.request<SubscriptionListOrganizationModel>({
+            url: '/api/subscriptions',
+            method: 'GET',
+            headers,
+            query,
+        }, opts?.responseOpts);
+    };
+
 }
