@@ -11,15 +11,127 @@
  * Do not edit the class manually.
  */
 
+import type { Observable } from 'rxjs';
+import type { AjaxResponse } from 'rxjs/ajax';
+import { BaseAPI, throwIfNullOrUndefined, encodeURI } from '../runtime';
+import type { OperationOpts, HttpHeaders, HttpQuery } from '../runtime';
+import type {
+    ErrorResponseOrganizationModel,
+    PostSubscriptionDeliveryOrganizationModel,
+    SubscriptionDeliveryListOrganizationModel,
+    SubscriptionDeliveryOrganizationModel,
+} from '../models';
+
+export interface CreateSubscriptionDeliveryRequest {
+    postSubscriptionDeliveryOrganizationModel: PostSubscriptionDeliveryOrganizationModel;
+}
+
+export interface GetSubscriptionDeliveryRequest {
+    subscriptionDeliveryGuid: string;
+}
+
+export interface ListSubscriptionDeliveriesRequest {
+    page?: number;
+    perPage?: number;
+    guid?: string;
+    subscriptionEventGuid?: string;
+    subscriptionGuid?: string;
+}
+
 /**
- * @export
- * @interface PatchOrganizationOrganizationModel
+ * no description
  */
-export interface PatchOrganizationOrganizationModel {
+export class SubscriptionDeliveriesOrganizationApi extends BaseAPI {
+
     /**
-     * Name for the organization.
-     * @type {string}
-     * @memberof PatchOrganizationOrganizationModel
+     * Creates a SubscriptionDelivery.  post  Required scope: **subscription_events:execute
+     * Create SubscriptionDelivery
      */
-    name: string;
+    createSubscriptionDelivery({ postSubscriptionDeliveryOrganizationModel }: CreateSubscriptionDeliveryRequest): Observable<SubscriptionDeliveryOrganizationModel>
+    createSubscriptionDelivery({ postSubscriptionDeliveryOrganizationModel }: CreateSubscriptionDeliveryRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionDeliveryOrganizationModel>>
+    createSubscriptionDelivery({ postSubscriptionDeliveryOrganizationModel }: CreateSubscriptionDeliveryRequest, opts?: OperationOpts): Observable<SubscriptionDeliveryOrganizationModel | AjaxResponse<SubscriptionDeliveryOrganizationModel>> {
+        throwIfNullOrUndefined(postSubscriptionDeliveryOrganizationModel, 'postSubscriptionDeliveryOrganizationModel', 'createSubscriptionDelivery');
+
+        const headers: HttpHeaders = {
+            'Content-Type': 'application/json',
+            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
+            // oauth required
+            ...(this.configuration.accessToken != null
+                ? { Authorization: typeof this.configuration.accessToken === 'function'
+                    ? this.configuration.accessToken('oauth2', ['subscription_events:execute'])
+                    : this.configuration.accessToken }
+                : undefined
+            ),
+        };
+
+        return this.request<SubscriptionDeliveryOrganizationModel>({
+            url: '/api/subscription_deliveries/',
+            method: 'POST',
+            headers,
+            body: postSubscriptionDeliveryOrganizationModel,
+        }, opts?.responseOpts);
+    };
+
+    /**
+     * Retrieves a subscription delivery.  Required scope: **subscription_events:read**
+     * Get Subscription Delivery 
+     */
+    getSubscriptionDelivery({ subscriptionDeliveryGuid }: GetSubscriptionDeliveryRequest): Observable<SubscriptionDeliveryOrganizationModel>
+    getSubscriptionDelivery({ subscriptionDeliveryGuid }: GetSubscriptionDeliveryRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionDeliveryOrganizationModel>>
+    getSubscriptionDelivery({ subscriptionDeliveryGuid }: GetSubscriptionDeliveryRequest, opts?: OperationOpts): Observable<SubscriptionDeliveryOrganizationModel | AjaxResponse<SubscriptionDeliveryOrganizationModel>> {
+        throwIfNullOrUndefined(subscriptionDeliveryGuid, 'subscriptionDeliveryGuid', 'getSubscriptionDelivery');
+
+        const headers: HttpHeaders = {
+            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
+            // oauth required
+            ...(this.configuration.accessToken != null
+                ? { Authorization: typeof this.configuration.accessToken === 'function'
+                    ? this.configuration.accessToken('oauth2', ['subscription_events:read'])
+                    : this.configuration.accessToken }
+                : undefined
+            ),
+        };
+
+        return this.request<SubscriptionDeliveryOrganizationModel>({
+            url: '/api/subscription_deliveries/{subscription_delivery_guid}'.replace('{subscription_delivery_guid}', encodeURI(subscriptionDeliveryGuid)),
+            method: 'GET',
+            headers,
+        }, opts?.responseOpts);
+    };
+
+    /**
+     * Retrieves a listing of subscription deliveries s.  Required scope: **subscription_events:read**
+     * Get subscription deliveries list
+     */
+    listSubscriptionDeliveries({ page, perPage, guid, subscriptionEventGuid, subscriptionGuid }: ListSubscriptionDeliveriesRequest): Observable<SubscriptionDeliveryListOrganizationModel>
+    listSubscriptionDeliveries({ page, perPage, guid, subscriptionEventGuid, subscriptionGuid }: ListSubscriptionDeliveriesRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionDeliveryListOrganizationModel>>
+    listSubscriptionDeliveries({ page, perPage, guid, subscriptionEventGuid, subscriptionGuid }: ListSubscriptionDeliveriesRequest, opts?: OperationOpts): Observable<SubscriptionDeliveryListOrganizationModel | AjaxResponse<SubscriptionDeliveryListOrganizationModel>> {
+
+        const headers: HttpHeaders = {
+            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
+            // oauth required
+            ...(this.configuration.accessToken != null
+                ? { Authorization: typeof this.configuration.accessToken === 'function'
+                    ? this.configuration.accessToken('oauth2', ['subscription_events:read'])
+                    : this.configuration.accessToken }
+                : undefined
+            ),
+        };
+
+        const query: HttpQuery = {};
+
+        if (page != null) { query['page'] = page; }
+        if (perPage != null) { query['per_page'] = perPage; }
+        if (guid != null) { query['guid'] = guid; }
+        if (subscriptionEventGuid != null) { query['subscription_event_guid'] = subscriptionEventGuid; }
+        if (subscriptionGuid != null) { query['subscription_guid'] = subscriptionGuid; }
+
+        return this.request<SubscriptionDeliveryListOrganizationModel>({
+            url: '/api/subscription_deliveries',
+            method: 'GET',
+            headers,
+            query,
+        }, opts?.responseOpts);
+    };
+
 }

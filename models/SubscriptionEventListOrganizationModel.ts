@@ -11,15 +11,36 @@
  * Do not edit the class manually.
  */
 
+import type {
+    SubscriptionEventOrganizationModel,
+} from './';
+
 /**
  * @export
- * @interface PatchOrganizationOrganizationModel
+ * @interface SubscriptionEventListOrganizationModel
  */
-export interface PatchOrganizationOrganizationModel {
+export interface SubscriptionEventListOrganizationModel {
     /**
-     * Name for the organization.
-     * @type {string}
-     * @memberof PatchOrganizationOrganizationModel
+     * The total number of records available.
+     * @type {number}
+     * @memberof SubscriptionEventListOrganizationModel
      */
-    name: string;
+    total: number;
+    /**
+     * The page index to retrieve.
+     * @type {number}
+     * @memberof SubscriptionEventListOrganizationModel
+     */
+    page: number;
+    /**
+     * The number of entities per page to return.
+     * @type {number}
+     * @memberof SubscriptionEventListOrganizationModel
+     */
+    per_page: number;
+    /**
+     * @type {Array<SubscriptionEventOrganizationModel>}
+     * @memberof SubscriptionEventListOrganizationModel
+     */
+    objects: Array<SubscriptionEventOrganizationModel>;
 }

@@ -11,15 +11,89 @@
  * Do not edit the class manually.
  */
 
+import type { Observable } from 'rxjs';
+import type { AjaxResponse } from 'rxjs/ajax';
+import { BaseAPI, throwIfNullOrUndefined, encodeURI } from '../runtime';
+import type { OperationOpts, HttpHeaders, HttpQuery } from '../runtime';
+import type {
+    ErrorResponseOrganizationModel,
+    SubscriptionEventListOrganizationModel,
+    SubscriptionEventOrganizationModel,
+} from '../models';
+
+export interface GetSubscriptionEventRequest {
+    subscriptionEventGuid: string;
+}
+
+export interface ListSubscriptionEventsRequest {
+    page?: number;
+    perPage?: number;
+    guid?: string;
+}
+
 /**
- * @export
- * @interface PatchOrganizationOrganizationModel
+ * no description
  */
-export interface PatchOrganizationOrganizationModel {
+export class SubscriptionEventsOrganizationApi extends BaseAPI {
+
     /**
-     * Name for the organization.
-     * @type {string}
-     * @memberof PatchOrganizationOrganizationModel
+     * Retrieves a Subscription Event.  Required scope: **subscription_events:read**
+     * Get Subscription Event 
      */
-    name: string;
+    getSubscriptionEvent({ subscriptionEventGuid }: GetSubscriptionEventRequest): Observable<SubscriptionEventOrganizationModel>
+    getSubscriptionEvent({ subscriptionEventGuid }: GetSubscriptionEventRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionEventOrganizationModel>>
+    getSubscriptionEvent({ subscriptionEventGuid }: GetSubscriptionEventRequest, opts?: OperationOpts): Observable<SubscriptionEventOrganizationModel | AjaxResponse<SubscriptionEventOrganizationModel>> {
+        throwIfNullOrUndefined(subscriptionEventGuid, 'subscriptionEventGuid', 'getSubscriptionEvent');
+
+        const headers: HttpHeaders = {
+            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
+            // oauth required
+            ...(this.configuration.accessToken != null
+                ? { Authorization: typeof this.configuration.accessToken === 'function'
+                    ? this.configuration.accessToken('oauth2', ['subscription_events:read'])
+                    : this.configuration.accessToken }
+                : undefined
+            ),
+        };
+
+        return this.request<SubscriptionEventOrganizationModel>({
+            url: '/api/subscription_events/{subscription_event_guid}'.replace('{subscription_event_guid}', encodeURI(subscriptionEventGuid)),
+            method: 'GET',
+            headers,
+        }, opts?.responseOpts);
+    };
+
+    /**
+     * Retrieves a listing of subscription events s.  Required scope: **subscription_events:read**
+     * Get subscription events list
+     */
+    listSubscriptionEvents({ page, perPage, guid }: ListSubscriptionEventsRequest): Observable<SubscriptionEventListOrganizationModel>
+    listSubscriptionEvents({ page, perPage, guid }: ListSubscriptionEventsRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionEventListOrganizationModel>>
+    listSubscriptionEvents({ page, perPage, guid }: ListSubscriptionEventsRequest, opts?: OperationOpts): Observable<SubscriptionEventListOrganizationModel | AjaxResponse<SubscriptionEventListOrganizationModel>> {
+
+        const headers: HttpHeaders = {
+            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
+            // oauth required
+            ...(this.configuration.accessToken != null
+                ? { Authorization: typeof this.configuration.accessToken === 'function'
+                    ? this.configuration.accessToken('oauth2', ['subscription_events:read'])
+                    : this.configuration.accessToken }
+                : undefined
+            ),
+        };
+
+        const query: HttpQuery = {};
+
+        if (page != null) { query['page'] = page; }
+        if (perPage != null) { query['per_page'] = perPage; }
+        if (guid != null) { query['guid'] = guid; }
+
+        return this.request<SubscriptionEventListOrganizationModel>({
+            url: '/api/subscription_events',
+            method: 'GET',
+            headers,
+            query,
+        }, opts?.responseOpts);
+    };
+
 }

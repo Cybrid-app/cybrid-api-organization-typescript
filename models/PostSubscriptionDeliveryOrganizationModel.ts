@@ -13,13 +13,19 @@
 
 /**
  * @export
- * @interface PatchOrganizationOrganizationModel
+ * @interface PostSubscriptionDeliveryOrganizationModel
  */
-export interface PatchOrganizationOrganizationModel {
+export interface PostSubscriptionDeliveryOrganizationModel {
     /**
-     * Name for the organization.
+     * The event guid .
      * @type {string}
-     * @memberof PatchOrganizationOrganizationModel
+     * @memberof PostSubscriptionDeliveryOrganizationModel
      */
-    name: string;
+    subscription_event_guid: string;
+    /**
+     * The subscription guid.
+     * @type {string}
+     * @memberof PostSubscriptionDeliveryOrganizationModel
+     */
+    subscription_guid: string;
 }

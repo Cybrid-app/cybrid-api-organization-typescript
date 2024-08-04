@@ -13,13 +13,85 @@
 
 /**
  * @export
- * @interface PatchOrganizationOrganizationModel
+ * @interface SubscriptionDeliveryOrganizationModel
  */
-export interface PatchOrganizationOrganizationModel {
+export interface SubscriptionDeliveryOrganizationModel {
     /**
-     * Name for the organization.
+     * Auto-generated unique identifier for the subscription delivery.
      * @type {string}
-     * @memberof PatchOrganizationOrganizationModel
+     * @memberof SubscriptionDeliveryOrganizationModel
      */
-    name: string;
+    guid: string;
+    /**
+     * The response of the subscription delivery.
+     * @type {string}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    response?: string | null;
+    /**
+     * The subscription event guid of the subscription delivery.
+     * @type {string}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    subscription_event_guid: string;
+    /**
+     * The subscription guid of the subscription delivery.
+     * @type {string}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    subscription_guid: string;
+    /**
+     * The state of the subscription delivery.
+     * @type {string}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    state: SubscriptionDeliveryOrganizationModelStateEnum;
+    /**
+     * ISO8601 datetime the next attempt will be made.
+     * @type {string}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    next_attempt_at?: string | null;
+    /**
+     * The number of attempts made to deliver the event.
+     * @type {number}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    attempt_count: number;
+    /**
+     * ISO8601 datetime the event was delivered.
+     * @type {string}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    completed_at?: string | null;
+    /**
+     * ISO8601 datetime the event delivery was marked as failed.
+     * @type {string}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    failed_at?: string | null;
+    /**
+     * ISO8601 datetime the record was created at.
+     * @type {string}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    created_at?: string;
+    /**
+     * ISO8601 datetime the record was last updated at.
+     * @type {string}
+     * @memberof SubscriptionDeliveryOrganizationModel
+     */
+    updated_at?: string;
 }
+
+/**
+ * @export
+ * @enum {string}
+ */
+export enum SubscriptionDeliveryOrganizationModelStateEnum {
+    Storing = 'storing',
+    Completed = 'completed',
+    Failing = 'failing',
+    Failed = 'failed'
+}
+

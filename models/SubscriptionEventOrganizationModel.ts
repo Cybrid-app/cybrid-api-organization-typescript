@@ -13,13 +13,49 @@
 
 /**
  * @export
- * @interface PatchOrganizationOrganizationModel
+ * @interface SubscriptionEventOrganizationModel
  */
-export interface PatchOrganizationOrganizationModel {
+export interface SubscriptionEventOrganizationModel {
     /**
-     * Name for the organization.
+     * Auto-generated unique identifier for the subscription event.
      * @type {string}
-     * @memberof PatchOrganizationOrganizationModel
+     * @memberof SubscriptionEventOrganizationModel
      */
-    name: string;
+    guid: string;
+    /**
+     * The type of the subscription event. One of transfer.created or transfer.updated.
+     * @type {string}
+     * @memberof SubscriptionEventOrganizationModel
+     */
+    event_type: string;
+    /**
+     * The object guid for which the event is received.
+     * @type {string}
+     * @memberof SubscriptionEventOrganizationModel
+     */
+    object_guid: string;
+    /**
+     * The environment that the subscription event is configured for; one of sandbox or production.
+     * @type {string}
+     * @memberof SubscriptionEventOrganizationModel
+     */
+    environment?: string;
+    /**
+     * The organization guid of the subscription event.
+     * @type {string}
+     * @memberof SubscriptionEventOrganizationModel
+     */
+    organization_guid: string;
+    /**
+     * ISO8601 datetime the record was created at.
+     * @type {string}
+     * @memberof SubscriptionEventOrganizationModel
+     */
+    created_at: string;
+    /**
+     * ISO8601 datetime the record was last updated at.
+     * @type {string}
+     * @memberof SubscriptionEventOrganizationModel
+     */
+    updated_at?: string;
 }
