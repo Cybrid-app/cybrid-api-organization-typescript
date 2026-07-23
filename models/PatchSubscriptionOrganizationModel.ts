@@ -12,13 +12,15 @@
  */
 
 /**
- * 
+ * Request body for subscription modification.
  * @export
- * @enum {string}
+ * @interface PatchSubscriptionOrganizationModel
  */
-export enum SubscriptionStateOrganizationModel {
-    Storing = 'storing',
-    Completed = 'completed',
-    Failed = 'failed'
+export interface PatchSubscriptionOrganizationModel {
+    /**
+     * Name for the subscription.
+     * @type {string}
+     * @memberof PatchSubscriptionOrganizationModel
+     */
+    name?: string | null;
 }
-

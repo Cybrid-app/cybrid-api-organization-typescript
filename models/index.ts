@@ -1,6 +1,7 @@
 export * from './ErrorResponseOrganizationModel';
 export * from './OrganizationOrganizationModel';
 export * from './PatchOrganizationOrganizationModel';
+export * from './PatchSubscriptionOrganizationModel';
 export * from './PostSubscriptionDeliveryOrganizationModel';
 export * from './PostSubscriptionOrganizationModel';
 export * from './SubscriptionDeliveryListOrganizationModel';
