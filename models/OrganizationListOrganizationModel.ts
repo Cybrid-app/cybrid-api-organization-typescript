@@ -11,194 +11,36 @@
  * Do not edit the class manually.
  */
 
-import type { Observable } from 'rxjs';
-import type { AjaxResponse } from 'rxjs/ajax';
-import { BaseAPI, throwIfNullOrUndefined, encodeURI } from '../runtime';
-import type { OperationOpts, HttpHeaders, HttpQuery } from '../runtime';
 import type {
-    ErrorResponseOrganizationModel,
-    PatchSubscriptionOrganizationModel,
-    PostSubscriptionOrganizationModel,
-    SubscriptionListOrganizationModel,
-    SubscriptionOrganizationModel,
-} from '../models';
-
-export interface CreateSubscriptionRequest {
-    postSubscriptionOrganizationModel: PostSubscriptionOrganizationModel;
-}
-
-export interface DeleteSubscriptionRequest {
-    subscriptionGuid: string;
-}
-
-export interface GetSubscriptionRequest {
-    subscriptionGuid: string;
-}
-
-export interface ListSubscriptionsRequest {
-    page?: number;
-    perPage?: number;
-    guid?: string;
-    environment?: string;
-    state?: string;
-}
-
-export interface UpdateSubscriptionRequest {
-    subscriptionGuid: string;
-    patchSubscriptionOrganizationModel: PatchSubscriptionOrganizationModel;
-}
+    OrganizationOrganizationModel,
+} from './';
 
 /**
- * no description
+ * @export
+ * @interface OrganizationListOrganizationModel
  */
-export class SubscriptionsOrganizationApi extends BaseAPI {
-
+export interface OrganizationListOrganizationModel {
     /**
-     * Creates a Subscription.  ## Subscription creation  Subscriptions can be created for webhook endpoints.  ## State  | State | Description | |-------|-------------| | storing | The Platform is storing the subscription details in our private store | | completed | The Platform has created the subscription | | failed | The Platform was not able to successfully create the subscription |    Required scope: **subscriptions:execute
-     * Create Subscription
+     * The total number of records available.
+     * @type {number}
+     * @memberof OrganizationListOrganizationModel
      */
-    createSubscription({ postSubscriptionOrganizationModel }: CreateSubscriptionRequest): Observable<SubscriptionOrganizationModel>
-    createSubscription({ postSubscriptionOrganizationModel }: CreateSubscriptionRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionOrganizationModel>>
-    createSubscription({ postSubscriptionOrganizationModel }: CreateSubscriptionRequest, opts?: OperationOpts): Observable<SubscriptionOrganizationModel | AjaxResponse<SubscriptionOrganizationModel>> {
-        throwIfNullOrUndefined(postSubscriptionOrganizationModel, 'postSubscriptionOrganizationModel', 'createSubscription');
-
-        const headers: HttpHeaders = {
-            'Content-Type': 'application/json',
-            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
-            // oauth required
-            ...(this.configuration.accessToken != null
-                ? { Authorization: typeof this.configuration.accessToken === 'function'
-                    ? this.configuration.accessToken('oauth2', ['subscriptions:execute'])
-                    : this.configuration.accessToken }
-                : undefined
-            ),
-        };
-
-        return this.request<SubscriptionOrganizationModel>({
-            url: '/api/subscriptions/',
-            method: 'POST',
-            headers,
-            body: postSubscriptionOrganizationModel,
-        }, opts?.responseOpts);
-    };
-
+    total: number;
     /**
-     * Deletes a subscription.  Required scope: **subscriptions:execute**
-     * Delete Subscription
+     * The page index to retrieve.
+     * @type {number}
+     * @memberof OrganizationListOrganizationModel
      */
-    deleteSubscription({ subscriptionGuid }: DeleteSubscriptionRequest): Observable<void>
-    deleteSubscription({ subscriptionGuid }: DeleteSubscriptionRequest, opts?: OperationOpts): Observable<void | AjaxResponse<void>>
-    deleteSubscription({ subscriptionGuid }: DeleteSubscriptionRequest, opts?: OperationOpts): Observable<void | AjaxResponse<void>> {
-        throwIfNullOrUndefined(subscriptionGuid, 'subscriptionGuid', 'deleteSubscription');
-
-        const headers: HttpHeaders = {
-            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
-            // oauth required
-            ...(this.configuration.accessToken != null
-                ? { Authorization: typeof this.configuration.accessToken === 'function'
-                    ? this.configuration.accessToken('oauth2', ['subscriptions:execute'])
-                    : this.configuration.accessToken }
-                : undefined
-            ),
-        };
-
-        return this.request<void>({
-            url: '/api/subscriptions/{subscription_guid}'.replace('{subscription_guid}', encodeURI(subscriptionGuid)),
-            method: 'DELETE',
-            headers,
-        }, opts?.responseOpts);
-    };
-
+    page: number;
     /**
-     * Retrieves a subscription.  Required scope: **subscriptions:read**
-     * Get Subscription 
+     * The number of entities per page to return.
+     * @type {number}
+     * @memberof OrganizationListOrganizationModel
      */
-    getSubscription({ subscriptionGuid }: GetSubscriptionRequest): Observable<SubscriptionOrganizationModel>
-    getSubscription({ subscriptionGuid }: GetSubscriptionRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionOrganizationModel>>
-    getSubscription({ subscriptionGuid }: GetSubscriptionRequest, opts?: OperationOpts): Observable<SubscriptionOrganizationModel | AjaxResponse<SubscriptionOrganizationModel>> {
-        throwIfNullOrUndefined(subscriptionGuid, 'subscriptionGuid', 'getSubscription');
-
-        const headers: HttpHeaders = {
-            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
-            // oauth required
-            ...(this.configuration.accessToken != null
-                ? { Authorization: typeof this.configuration.accessToken === 'function'
-                    ? this.configuration.accessToken('oauth2', ['subscriptions:read'])
-                    : this.configuration.accessToken }
-                : undefined
-            ),
-        };
-
-        return this.request<SubscriptionOrganizationModel>({
-            url: '/api/subscriptions/{subscription_guid}'.replace('{subscription_guid}', encodeURI(subscriptionGuid)),
-            method: 'GET',
-            headers,
-        }, opts?.responseOpts);
-    };
-
+    per_page: number;
     /**
-     * Retrieves a listing of subscriptions.  Required scope: **subscriptions:read**
-     * Get subscriptions list
+     * @type {Array<OrganizationOrganizationModel>}
+     * @memberof OrganizationListOrganizationModel
      */
-    listSubscriptions({ page, perPage, guid, environment, state }: ListSubscriptionsRequest): Observable<SubscriptionListOrganizationModel>
-    listSubscriptions({ page, perPage, guid, environment, state }: ListSubscriptionsRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionListOrganizationModel>>
-    listSubscriptions({ page, perPage, guid, environment, state }: ListSubscriptionsRequest, opts?: OperationOpts): Observable<SubscriptionListOrganizationModel | AjaxResponse<SubscriptionListOrganizationModel>> {
-
-        const headers: HttpHeaders = {
-            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
-            // oauth required
-            ...(this.configuration.accessToken != null
-                ? { Authorization: typeof this.configuration.accessToken === 'function'
-                    ? this.configuration.accessToken('oauth2', ['subscriptions:read'])
-                    : this.configuration.accessToken }
-                : undefined
-            ),
-        };
-
-        const query: HttpQuery = {};
-
-        if (page != null) { query['page'] = page; }
-        if (perPage != null) { query['per_page'] = perPage; }
-        if (guid != null) { query['guid'] = guid; }
-        if (environment != null) { query['environment'] = environment; }
-        if (state != null) { query['state'] = state; }
-
-        return this.request<SubscriptionListOrganizationModel>({
-            url: '/api/subscriptions',
-            method: 'GET',
-            headers,
-            query,
-        }, opts?.responseOpts);
-    };
-
-    /**
-     * Update a subscription.  Required scope: **subscriptions:write**
-     * Patch subscription
-     */
-    updateSubscription({ subscriptionGuid, patchSubscriptionOrganizationModel }: UpdateSubscriptionRequest): Observable<SubscriptionOrganizationModel>
-    updateSubscription({ subscriptionGuid, patchSubscriptionOrganizationModel }: UpdateSubscriptionRequest, opts?: OperationOpts): Observable<AjaxResponse<SubscriptionOrganizationModel>>
-    updateSubscription({ subscriptionGuid, patchSubscriptionOrganizationModel }: UpdateSubscriptionRequest, opts?: OperationOpts): Observable<SubscriptionOrganizationModel | AjaxResponse<SubscriptionOrganizationModel>> {
-        throwIfNullOrUndefined(subscriptionGuid, 'subscriptionGuid', 'updateSubscription');
-        throwIfNullOrUndefined(patchSubscriptionOrganizationModel, 'patchSubscriptionOrganizationModel', 'updateSubscription');
-
-        const headers: HttpHeaders = {
-            'Content-Type': 'application/json',
-            ...(this.configuration.username != null && this.configuration.password != null ? { Authorization: `Basic ${btoa(this.configuration.username + ':' + this.configuration.password)}` } : undefined),
-            // oauth required
-            ...(this.configuration.accessToken != null
-                ? { Authorization: typeof this.configuration.accessToken === 'function'
-                    ? this.configuration.accessToken('oauth2', ['subscriptions:write'])
-                    : this.configuration.accessToken }
-                : undefined
-            ),
-        };
-
-        return this.request<SubscriptionOrganizationModel>({
-            url: '/api/subscriptions/{subscription_guid}'.replace('{subscription_guid}', encodeURI(subscriptionGuid)),
-            method: 'PATCH',
-            headers,
-            body: patchSubscriptionOrganizationModel,
-        }, opts?.responseOpts);
-    };
-
+    objects: Array<OrganizationOrganizationModel>;
 }
